@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  # O Banco de Dados (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: ifkeep_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ifkeep_db
+      MYSQL_ROOT_PASSWORD: root_password_123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # Interface para você mexer no banco pelo navegador
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+volumes:
+  mysql_data:
