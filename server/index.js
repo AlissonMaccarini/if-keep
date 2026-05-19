@@ -7,7 +7,9 @@ const { OAuth2Client } = require('google-auth-library');
 
 const app = express();
 const SECRET = 'if_keep_secret_key_2024';
-const GOOGLE_CLIENT_ID = 'COLOQUE_AQUI_SEU_CLIENT_ID.apps.googleusercontent.com'; // <--- SEU ID DO GOOGLE
+
+// ⚠️ IMPORTANTE: Copie o seu ID da tela "Credenciais" do Google Cloud (começa com 233211404750...)
+const GOOGLE_CLIENT_ID = 'COLOQUE_AQUI_SEU_CLIENT_ID_EXATO.apps.googleusercontent.com'; 
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 app.use(cors());
@@ -47,7 +49,6 @@ app.post('/google-login', async (req, res) => {
     db.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
       let user = results[0];
       if (!user) {
-        // Se não existe, cria usuário sem senha
         db.query("INSERT INTO users (username, email, password, secret_word) VALUES (?, ?, ?, ?)", [name, email, 'google-auth', 'google-auth'], (err, result) => {
           const newToken = jwt.sign({ id: result.insertId }, SECRET, { expiresIn: '24h' });
           res.json({ token: newToken, username: name });
@@ -115,15 +116,23 @@ app.post('/subjects', authenticateToken, (req, res) => {
   db.query("INSERT INTO subjects (name, user_id) VALUES (?, ?)", [req.body.name, req.user.id], (err) => {
     if (err) {
       console.error("Erro ao criar matéria:", err);
-      return res.status(500).json({ error: "Erro ao salvar matéria no banco de dados." });
+      return res.status(500).json({ error: "Erro ao salvar matéria." });
     }
     res.json({ message: "Salvo" });
   });
 });
 
 app.get('/notes', authenticateToken, (req, res) => {
-  db.query('SELECT * FROM notes WHERE user_id = ? ORDER BY id DESC', [req.user.id], (err, results) => {
-    res.json(err ? [] : results);
+  // 1. Deleta as notas arquivadas há mais de 10 dias
+  const deleteExpiredQuery = "DELETE FROM notes WHERE user_id = ? AND archived = 1 AND archived_at < NOW() - INTERVAL 10 DAY";
+  
+  db.query(deleteExpiredQuery, [req.user.id], (err) => {
+    if (err) console.error("Erro ao limpar notas expiradas:", err);
+
+    // 2. Busca o restante das notas
+    db.query('SELECT * FROM notes WHERE user_id = ? ORDER BY id DESC', [req.user.id], (err, results) => {
+      res.json(err ? [] : results);
+    });
   });
 });
 
@@ -133,7 +142,7 @@ app.post('/notes', authenticateToken, (req, res) => {
   [title, content, color, subject, archived ? 1 : 0, date, req.user.id], (err) => {
     if (err) {
       console.error("Erro ao criar nota:", err);
-      return res.status(500).json({ error: "Erro ao salvar nota no banco de dados." });
+      return res.status(500).json({ error: "Erro ao salvar nota." });
     }
     res.json({ message: "Salvo" });
   });
@@ -141,11 +150,31 @@ app.post('/notes', authenticateToken, (req, res) => {
 
 app.put('/notes/:id', authenticateToken, (req, res) => {
   const { id } = req.params;
-  const fields = Object.keys(req.body).map(k => `${k} = ?`).join(', ');
-  const values = [...Object.values(req.body), id, req.user.id];
+  let bodyData = { ...req.body };
+
+  // Registra a data exata se a nota estiver sendo arquivada agora
+  if (bodyData.archived === 1 || bodyData.archived === true) {
+     bodyData.archived = 1;
+     bodyData.archived_at = new Date().toISOString().slice(0, 19).replace('T', ' '); // Formato MySQL DATETIME
+  } else if (bodyData.archived === 0 || bodyData.archived === false) {
+     bodyData.archived = 0;
+     bodyData.archived_at = null; // Reseta se voltar ao normal
+  }
+
+  // Remove dados que não devem ir pro UPDATE do banco
+  delete bodyData.id;
+  delete bodyData.user_id;
+
+  if (Object.keys(bodyData).length === 0) return res.json({ message: "Nada a atualizar" });
+
+  const fields = Object.keys(bodyData).map(k => `${k} = ?`).join(', ');
+  const values = [...Object.values(bodyData), id, req.user.id];
   
   db.query(`UPDATE notes SET ${fields} WHERE id = ? AND user_id = ?`, values, (err) => {
-    if (err) console.error("Erro ao atualizar:", err);
+    if (err) {
+      console.error("Erro ao atualizar:", err);
+      return res.status(500).json({ error: "Erro ao atualizar a nota." });
+    }
     res.json({ message: "Atualizado" });
   });
 });
