@@ -1,50 +1,44 @@
-# 📌 IF Keep
+# IFkeep 📝
 
-## 🧾 Identificação do Projeto
-
-**Nome:** IF Keep  
-
-**O que é:**  
-App de notas (estilo Google Keep) com foco em estudantes, permitindo organizar anotações por matérias e temas.
-
-**Diferencial:**  
-- Recuperação de conta via **Palavra-Secreta** (sem uso de e-mail)  
-- Interface temática **"Gamer"**
+O **IFkeep** é uma aplicação web full-stack desenvolvida para a gestão eficiente de notas de estudo, organização por matérias e mapeamento contextual de produtividade.
 
 ---
 
-## 🎨 Identidade Visual
-
-- **Cores principais:**
-  - Verde Esmeralda `#10b981`
-  - Laranja Âmbar `#f59e0b`
-
-- **Estilo:**
-  - Visual moderno  
-  - Suporte a **Dark Mode**  
-  - Inspirado em interfaces de jogos  
-  - Alta legibilidade  
+## 🚀 Aceder à Aplicação (Produção)
+* **Frontend (Aplicação Web):** [https://ifkeep-frontend.onrender.com](https://ifkeep-frontend.onrender.com)
+* **Backend (API Server):** [https://ifkeep-backend.onrender.com](https://ifkeep-backend.onrender.com)
 
 ---
 
-## 👥 Organização da Equipe
+## 🛠️ Tecnologias Utilizadas
 
-- **Alisson (Líder Fullstack):**
-  - Banco de Dados (**MySQL**)  
-  - API (**Node.js**)  
-  - Lógica do App (**React**)  
+### **Frontend**
+* **React** (Create React App)
+* **TypeScript**
+* **Styled Components**
+* **Axios** para consumo de APIs
 
-- **Lucas (Colaborador / DevOps):**
-  - Configuração do ambiente (**Docker**)  
-  - Documentação (**README**)  
-  - Testes de bugs (**QA**)  
+### **Backend**
+* **Node.js** & **Express**
+* **MySQL** (com alojamento na nuvem **TiDB Cloud** via SSL)
+* **JSON Web Token (JWT)** para autenticação de sessões
+* **Bcrypt** para encriptação de palavras-passe
+
+---
+
+## ✨ Funcionalidades Principais
+* **Autenticação Segura:** Registo de utilizadores, login com encriptação de palavra-passe (bcrypt) e recuperação de conta por palavra-secreta.
+* **Gestão de Matérias:** Criação, edição/renomeação e exclusão de matérias escolares com suporte à atualização automática associada às notas.
+* **Blocos de Notas Avançados:** Criação de notas com títulos, conteúdos, marcação de favoritas/fixadas (*pinned*) e cores personalizadas.
+* **Arquivo Automático:** As notas arquivadas entram num ciclo de retenção com exclusão automática após 10 dias.
 
 ---
 
-## 📅 Datas do Projeto
+## ⚙️ Como Executar o Projeto Localmente
 
-- **Início:** Outubro de 2025  
-- **Versão Atual:** Março de 2026  
-  - Finalização do sistema de login e segurança  
+Se quiseres executar o projeto no teu computador para desenvolvimento, segue os passos abaixo:
 
----
+### 1. Clonar o Repositório
+```bash
+git clone [https://github.com/AlissonMaccarini/if-keep.git](https://github.com/AlissonMaccarini/if-keep.git)
+cd if-keep
