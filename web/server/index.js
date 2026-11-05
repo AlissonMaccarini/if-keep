@@ -15,11 +15,14 @@ app.use(cors());
 app.use(express.json());
 
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'root_password_123',
-  database: 'ifkeep_db',
-  port: 3306
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || 'root_password_123',
+  database: process.env.DB_DATABASE || 'ifkeep_db',
+  port: process.env.DB_PORT || 3306,
+  ssl: {
+    rejectUnauthorized: false // Obrigatório para conectar com segurança ao TiDB Cloud
+  }
 });
 
 db.connect((err) => {
