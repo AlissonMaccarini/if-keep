@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://ifkeep-backend.onrender.com',
+  baseURL: process.env.REACT_APP_API_URL || 'https://ifkeep-backend.onrender.com',
 });
 
 api.interceptors.request.use((config) => {
