@@ -15,6 +15,8 @@ const BackButton = styled.button`background: ${(p: any) => p.theme.hover || '#f1
 const NoteCard = styled.div`background: ${(p: any) => p.theme.surface || '#fff'}; padding: 20px; border-radius: 12px; border: 1px solid ${(p: any) => p.theme.border || '#ccc'}; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);`;
 const ActionBtn = styled.button`background: transparent; border: none; cursor: pointer; color: ${(p: any) => p.theme.textSec || '#5f6368'}; display: flex; align-items: center; gap: 5px; font-weight: 600; &:hover { color: ${(p: any) => p.theme.primary || '#1a73e8'}; }`;
 
+const API_URL = 'https://ifkeep-backend.onrender.com';
+
 export default function SubjectDetails() {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
@@ -29,7 +31,7 @@ export default function SubjectDetails() {
 
   const fetchNotes = async () => {
     try {
-      const res = await fetch('http://localhost:3001/notes', {
+      const res = await fetch(`${API_URL}/notes`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -41,7 +43,7 @@ export default function SubjectDetails() {
 
   const handleUpdateNote = async (noteId: number) => {
     try {
-      const res = await fetch(`http://localhost:3001/notes/${noteId}`, {
+      const res = await fetch(`${API_URL}/notes/${noteId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ title: editTitle, content: editContent })
@@ -56,7 +58,7 @@ export default function SubjectDetails() {
   const handleRenameSubject = async () => {
     if (!newSubjectName.trim()) return;
     try {
-      const res = await fetch(`http://localhost:3001/subjects/${encodeURIComponent(id)}`, {
+      const res = await fetch(`${API_URL}/subjects/${encodeURIComponent(id)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ newName: newSubjectName })

@@ -3,7 +3,7 @@ import styled, { ThemeProvider, createGlobalStyle, DefaultTheme } from 'styled-c
 import * as MdIcons from 'react-icons/md';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001';
+const API_URL = 'https://ifkeep-backend.onrender.com';
 
 declare module 'styled-components' {
   export interface DefaultTheme {

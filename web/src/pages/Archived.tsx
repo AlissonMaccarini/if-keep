@@ -8,13 +8,15 @@ const Container = styled.div`padding: 40px; background: #f8f9fa; min-height: 100
 const NoteCard = styled.div`background: white; padding: 20px; border-radius: 12px; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05);`;
 const WarningText = styled.p`color: #d93025; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 5px; margin-top: 10px;`;
 
+const API_URL = 'https://ifkeep-backend.onrender.com';
+
 export const Archived: React.FC = () => {
   const [archivedNotes, setArchivedNotes] = useState<any[]>([]);
   const token = localStorage.getItem('token');
 
   const fetchArchivedNotes = async () => {
     try {
-      const res = await fetch('http://localhost:3001/notes', {
+      const res = await fetch(`${API_URL}/notes`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -25,7 +27,7 @@ export const Archived: React.FC = () => {
   useEffect(() => { fetchArchivedNotes(); }, []);
 
   const handleUnarchive = async (id: number) => {
-    await fetch(`http://localhost:3001/notes/${id}`, {
+    await fetch(`${API_URL}/notes/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ archived: 0 })
@@ -34,7 +36,7 @@ export const Archived: React.FC = () => {
   };
 
   const handleDelete = async (id: number) => {
-    await fetch(`http://localhost:3001/notes/${id}`, {
+    await fetch(`${API_URL}/notes/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
