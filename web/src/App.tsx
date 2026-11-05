@@ -173,9 +173,11 @@ export default function App() {
 
   const handleLoginRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Tentativa de autenticação:", authMode, authForm);
     try {
       const endpoint = authMode === 'register' ? '/register' : '/login';
       const res = await axios.post(`${API_URL}${endpoint}`, authForm);
+      console.log("Resposta recebida:", res.data);
       if (authMode === 'register') {
         alert("Conta criada! Faça login agora.");
         setAuthMode('login');
@@ -184,16 +186,24 @@ export default function App() {
         localStorage.setItem('username', res.data.username);
         setToken(res.data.token); setUsername(res.data.username);
       }
-    } catch (err: any) { alert(err.response?.data?.error || "Erro de conexão."); }
+    } catch (err: any) { 
+      console.error("Erro detalhado no login/registo:", err);
+      alert(err.response?.data?.error || err.message || "Erro de conexão."); 
+    }
   };
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Tentativa de redefinição de senha:", authForm);
     try {
-      await axios.post(`${API_URL}/reset-password`, authForm);
+      const res = await axios.post(`${API_URL}/reset-password`, authForm);
+      console.log("Resposta de redefinição:", res.data);
       alert("Senha atualizada com sucesso! Faça login.");
       setAuthMode('login');
-    } catch (err: any) { alert(err.response?.data?.error || "Erro ao redefinir a senha."); }
+    } catch (err: any) { 
+      console.error("Erro detalhado no reset:", err);
+      alert(err.response?.data?.error || err.message || "Erro ao redefinir a senha."); 
+    }
   };
 
   const handleLogout = () => { 
@@ -567,3 +577,4 @@ export default function App() {
     </ThemeProvider>
   );
 }
+```[cite: 14]
