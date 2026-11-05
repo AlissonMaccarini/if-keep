@@ -18,10 +18,10 @@ const db = mysql.createConnection({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'root_password_123',
-  database: process.env.DB_DATABASE || 'ifkeep_db',
-  port: process.env.DB_PORT || 3306,
+  database: process.env.DB_DATABASE || 'test',
+  port: process.env.DB_PORT || 4000,
   ssl: {
-    rejectUnauthorized: false // Obrigatório para conectar com segurança ao TiDB Cloud
+    rejectUnauthorized: false
   }
 });
 
@@ -29,55 +29,7 @@ db.connect((err) => {
   if (err) {
     console.error('❌ ERRO MYSQL:', err.message);
   } else {
-    console.log('✅ CONECTADO AO MYSQL!');
-    
-    // Tabela de usuários
-    db.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        username VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
-        secret_word VARCHAR(255) NOT NULL
-      )
-    `);
-
-    // Tabela de matérias (removendo qualquer índice restritivo antigo)
-    db.query(`
-      CREATE TABLE IF NOT EXISTS subjects (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT NOT NULL,
-        name VARCHAR(255) NOT NULL
-      )
-    `, (err) => {
-      if (!err) {
-        db.query("ALTER TABLE subjects DROP INDEX user_id", () => {});
-        db.query("ALTER TABLE subjects DROP INDEX name", () => {});
-      }
-    });
-
-    // Tabela de notas
-    db.query(`
-      CREATE TABLE IF NOT EXISTS notes (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT NOT NULL,
-        title TEXT,
-        content TEXT,
-        color VARCHAR(50) DEFAULT 'transparent',
-        subject VARCHAR(255) DEFAULT 'Geral',
-        archived TINYINT(1) DEFAULT 0,
-        archived_at DATETIME NULL,
-        pinned TINYINT(1) DEFAULT 0,
-        date VARCHAR(50)
-      )
-    `, (err) => {
-      if (!err) {
-        // Garante a coluna pinned caso a tabela já exista
-        db.query("ALTER TABLE notes ADD COLUMN pinned TINYINT(1) DEFAULT 0", (errAlter) => {
-          // Ignora se a coluna já existir (Erro 1060)
-        });
-      }
-    });
+    console.log('✅ CONECTADO AO MYSQL COM SUCESSO!');
   }
 });
 
@@ -277,4 +229,5 @@ app.delete('/subjects/:id', authenticateToken, (req, res) => {
   });
 });
 
-app.listen(3001, () => console.log('🚀 Server ON: 3001'));
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log(`🚀 Server ON: ${PORT}`));
