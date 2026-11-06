@@ -577,4 +577,3 @@ export default function App() {
     </ThemeProvider>
   );
 }
-```[cite: 14]
